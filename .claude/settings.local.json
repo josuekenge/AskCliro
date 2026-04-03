@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(npm list:*)",
+      "Bash(./node_modules/.bin/tsc --noEmit --pretty false)",
+      "Bash(./node_modules/.bin/tsc --noEmit --pretty true --listFiles)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(npx eslint:*)",
+      "Bash(npx react-scripts:*)",
+      "Bash(npx craco:*)",
+      "Bash(pip install:*)"
+    ]
+  }
+}
