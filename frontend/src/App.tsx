@@ -1,14 +1,19 @@
-import './App.css'
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import DashboardPage from './pages/DashboardPage';
+import NewSessionPage from './pages/NewSessionPage';
+import SessionPage from './pages/SessionPage';
 
 function App() {
   return (
-    <>
-      <div>
-        <h1>AskCliro</h1>
-        <p>AI-Powered Ambient Clinical Assistant</p>
-      </div>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/session/new" element={<NewSessionPage />} />
+        <Route path="/session/:id" element={<SessionPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

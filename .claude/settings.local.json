@@ -10,7 +10,26 @@
       "Bash(npx eslint:*)",
       "Bash(npx react-scripts:*)",
       "Bash(npx craco:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(npm ls:*)",
+      "Bash(ls \"c:/Users/josue/OneDrive/Desktop/AskCliro/backend/venv/Scripts/python\"*)",
+      "Bash(ls \"c:/Users/josue/OneDrive/Desktop/AskCliro/backend/venv/bin/python\"*)",
+      "Bash(pip list:*)",
+      "Bash(venv/Scripts/pip.exe install:*)",
+      "Bash(venv/Scripts/python.exe -c \"from app.main import app; print\\('App loaded OK'\\); print\\('Routes:', [r.path for r in app.routes if hasattr\\(r, 'path'\\)]\\)\")",
+      "Bash(venv/Scripts/python.exe main.py)",
+      "Bash(curl -s http://localhost:8000/health)",
+      "Bash(venv/Scripts/python.exe -c ':*)",
+      "Bash(venv/Scripts/python.exe -m pytest tests/test_sessions_crud.py -v)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :8000)",
+      "Bash([ -d \"venv/Scripts\" ])",
+      "Bash(venv/Scripts/python -c \"import httpx; r = httpx.get\\('http://127.0.0.1:8000/health', timeout=5\\); print\\(r.status_code, r.text\\)\")",
+      "Bash([ -d \"venv/bin\" ])",
+      "Bash(venv/bin/python -c \"import httpx; r = httpx.get\\('http://127.0.0.1:8000/health', timeout=5\\); print\\(r.status_code, r.text\\)\")",
+      "Bash(taskkill //PID 40024 //F)",
+      "Bash(taskkill //PID 17764 //F)",
+      "Bash(venv/Scripts/python.exe -c \"from app.core.config import settings; print\\('ALLOWED_ORIGINS:', settings.ALLOWED_ORIGINS\\); print\\('List:', settings.allowed_origins_list\\)\")"
     ]
   }
 }

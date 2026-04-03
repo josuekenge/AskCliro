@@ -2,15 +2,19 @@
 Application Configuration
 """
 
+from pathlib import Path
 from pydantic_settings import BaseSettings
 from typing import List, Optional
+
+# Resolve .env path relative to this file, not CWD
+ENV_FILE = str(Path(__file__).resolve().parent.parent.parent / ".env")
 
 class Settings(BaseSettings):
     """Application settings"""
 
     # API Keys
-    DEEPGRAM_API_KEY: str
-    ANTHROPIC_API_KEY: str
+    DEEPGRAM_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str = ""
 
     # Supabase (optional for early development)
     SUPABASE_URL: Optional[str] = None
@@ -26,14 +30,14 @@ class Settings(BaseSettings):
     # Server
     DEBUG: bool = False
     ENVIRONMENT: str = "development"
-    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://localhost:3000,http://localhost:3003"
 
     @property
     def allowed_origins_list(self) -> List[str]:
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",")]
 
     class Config:
-        env_file = ".env"
+        env_file = ENV_FILE
         case_sensitive = True
 
 settings = Settings()

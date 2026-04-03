@@ -1,9 +1,9 @@
+const path = require('path');
+
 module.exports = {
   style: {
     postcss: {
-      plugins: [
-        require('@tailwindcss/postcss'),
-      ],
+      mode: 'file',
     },
   },
 };
