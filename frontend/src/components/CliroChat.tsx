@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { Badge } from './ui/badge';
 import { CliroInput } from './ui/cliro-input';
 
@@ -17,7 +17,6 @@ const SOAPCard: React.FC<{ data: SOAPData }> = ({ data }) => {
     { key: 'A', label: 'ASSESSMENT', ...data.assessment },
     { key: 'P', label: 'PLAN', ...data.plan },
   ];
-
   const variantMap = { Done: 'success' as const, Updating: 'warning' as const, Pending: 'secondary' as const };
 
   return (
@@ -49,9 +48,72 @@ export type ChatMessage =
   | { from: 'cliro'; type: 'soap'; data: SOAPData }
   | { from: 'doctor'; type: 'text'; text: string };
 
-const CliroChat: React.FC = () => {
+interface PatientInfo {
+  full_name: string;
+  age: number | null;
+  sex: string | null;
+  allergies: string[];
+  conditions: string[];
+  medications: any[];
+  mrn: string | null;
+}
+
+interface SessionInfo {
+  id: string;
+  status: string;
+  chief_complaint: string;
+}
+
+interface CliroChatProps {
+  patient?: PatientInfo;
+  session?: SessionInfo;
+}
+
+function buildWelcomeMessage(patient?: PatientInfo, session?: SessionInfo): string {
+  if (!patient || !session) return "Session ready. I'll assist you in real time.";
+
+  const parts: string[] = [];
+  const demo = [patient.full_name, patient.age ? `${patient.age}` : null, patient.sex].filter(Boolean).join(', ');
+  parts.push(`Session started for **${demo}**.`);
+
+  if (session.chief_complaint) {
+    parts.push(`Chief complaint: ${session.chief_complaint}.`);
+  }
+
+  const alerts: string[] = [];
+  if (patient.allergies?.length > 0) {
+    alerts.push(`Allergies: ${patient.allergies.join(', ')}`);
+  }
+  if (patient.conditions?.length > 0) {
+    alerts.push(`Conditions: ${patient.conditions.join(', ')}`);
+  }
+  if (patient.medications?.length > 0) {
+    const meds = patient.medications.map((m: any) => typeof m === 'string' ? m : m.name).filter(Boolean);
+    if (meds.length > 0) alerts.push(`Medications: ${meds.join(', ')}`);
+  }
+
+  if (alerts.length > 0) {
+    parts.push(`\n\nPatient context I have:\n${alerts.map(a => `• ${a}`).join('\n')}`);
+  }
+
+  parts.push("\n\nI'll be listening and updating your SOAP note and differentials as the conversation progresses. Ask me anything.");
+
+  return parts.join(' ');
+}
+
+const CliroChat: React.FC<CliroChatProps> = ({ patient, session }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = React.useState<ChatMessage[]>([]);
+
+  // Generate welcome message from patient context
+  const welcomeMessage = useMemo(() => buildWelcomeMessage(patient, session), [patient, session]);
+
+  // Add welcome message on mount
+  useEffect(() => {
+    if (patient && session && messages.length === 0) {
+      setMessages([{ from: 'cliro', type: 'text', text: welcomeMessage }]);
+    }
+  }, [patient, session]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -62,7 +124,7 @@ const CliroChat: React.FC = () => {
   const handleSend = (text: string, mode: string) => {
     if (!text.trim()) return;
     setMessages((prev) => [...prev, { from: 'doctor', type: 'text', text }]);
-    // TODO: send to backend, receive Cliro response
+    // TODO: POST to /sessions/:id/chat → get Cliro response (Feature 04)
   };
 
   return (
@@ -80,7 +142,7 @@ const CliroChat: React.FC = () => {
               </div>
               <h3 className="text-[15px] font-semibold text-[hsl(var(--foreground))] mb-1">Cliro is ready</h3>
               <p className="text-[13px] text-[hsl(var(--muted-foreground))] max-w-sm">
-                Start the session and I'll listen in real time. I'll update your SOAP note and surface differentials as the conversation progresses.
+                Start the session and I'll listen in real time.
               </p>
             </div>
           )}
@@ -114,7 +176,11 @@ const CliroChat: React.FC = () => {
                 )}
                 <div className="pl-8">
                   {msg.type === 'text' && (
-                    <p className="text-[14px] leading-[1.7] text-[hsl(var(--foreground))]/85">{msg.text}</p>
+                    <div className="text-[14px] leading-[1.7] text-[hsl(var(--foreground))]/85 whitespace-pre-line">
+                      {msg.text.split('**').map((part, j) =>
+                        j % 2 === 1 ? <strong key={j}>{part}</strong> : part
+                      )}
+                    </div>
                   )}
                   {msg.type === 'soap' && (
                     <div className="my-2"><SOAPCard data={msg.data} /></div>

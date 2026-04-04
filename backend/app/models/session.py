@@ -15,6 +15,7 @@ class SessionCreate(BaseModel):
     chief_complaint: str = Field(..., min_length=1, max_length=500)
     allergies: List[str] = Field(default_factory=list)
     conditions: List[str] = Field(default_factory=list)
+    medications: List[str] = Field(default_factory=list)
 
 
 class SessionUpdate(BaseModel):

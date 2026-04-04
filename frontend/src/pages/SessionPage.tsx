@@ -7,6 +7,17 @@ import CliroChat from '../components/CliroChat';
 import RightPanel from '../components/RightPanel';
 import { sessionsApi } from '../services';
 
+interface PatientData {
+  id: string;
+  full_name: string;
+  age: number | null;
+  sex: string | null;
+  allergies: string[];
+  conditions: string[];
+  medications: any[];
+  mrn: string | null;
+}
+
 interface SessionData {
   id: string;
   status: string;
@@ -16,15 +27,7 @@ interface SessionData {
   started_at: string;
   ended_at: string | null;
   duration_seconds: number | null;
-  patient: {
-    id: string;
-    full_name: string;
-    age: number | null;
-    sex: string | null;
-    allergies: string[];
-    conditions: string[];
-    mrn: string | null;
-  };
+  patient: PatientData;
 }
 
 export const SessionPage: React.FC = () => {
@@ -59,11 +62,6 @@ export const SessionPage: React.FC = () => {
     } catch {}
   };
 
-  const handleExportSOAP = () => {
-    // TODO: connect to export endpoint
-    alert('Export coming soon — Feature 07');
-  };
-
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center" style={{ background: 'linear-gradient(145deg, #e4e8f1, #dde1ec, #e8ebf3, #dfe3ee)' }}>
@@ -80,6 +78,9 @@ export const SessionPage: React.FC = () => {
       </div>
     );
   }
+
+  const patient = session.patient;
+  const initials = patient?.full_name?.split(' ').map((n: string) => n[0]).join('') || '?';
 
   return (
     <div className="h-screen flex flex-col overflow-hidden" style={{ background: 'linear-gradient(145deg, #e4e8f1, #dde1ec, #e8ebf3, #dfe3ee)' }}>
@@ -106,16 +107,16 @@ export const SessionPage: React.FC = () => {
               <span className="text-emerald-600 font-medium text-[11px]">Session active</span>
             </>
           ) : (
-            <span className="text-[11px] font-medium text-[hsl(var(--muted-foreground))]">Session completed</span>
+            <span className="text-[11px] font-medium">Session completed</span>
           )}
           <span className="opacity-30 text-xs mx-1">&middot;</span>
           <span className="text-[11px]">Dr. Okafor</span>
           <span className="opacity-30 text-xs mx-1">&middot;</span>
-          <span className="text-[11px]">Patient: {session.patient?.full_name}</span>
+          <span className="text-[11px]">Patient: {patient?.full_name}</span>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleExportSOAP}>Export SOAP</Button>
+          <Button variant="outline" size="sm">Export SOAP</Button>
           {session.status === 'active' && (
             <Button variant="outline" size="sm" onClick={handleEndSession}>End session</Button>
           )}
@@ -128,10 +129,10 @@ export const SessionPage: React.FC = () => {
       {/* Main */}
       <main className="flex-1 flex overflow-hidden">
         <PatientSidebar
-          patientName={session.patient?.full_name}
-          patientInitials={session.patient?.full_name?.split(' ').map((n: string) => n[0]).join('') || '?'}
+          patientName={patient?.full_name}
+          patientInitials={initials}
         />
-        <CliroChat />
+        <CliroChat patient={patient} session={session} />
         <RightPanel />
       </main>
     </div>

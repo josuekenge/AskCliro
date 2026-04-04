@@ -54,6 +54,7 @@ export const sessionsApi = {
     chief_complaint: string;
     allergies?: string[];
     conditions?: string[];
+    medications?: string[];
   }) => api.post('/api/sessions', data),
 
   list: (params?: { status?: string; patient_id?: string }) => {

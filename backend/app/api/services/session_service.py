@@ -31,6 +31,7 @@ def create_session(data: SessionCreate) -> dict:
         sex=data.patient_sex,
         allergies=data.allergies,
         conditions=data.conditions,
+        medications=[{"name": m.strip()} for m in data.medications if m.strip()],
     )
     patient = create_patient(patient_data)
 
